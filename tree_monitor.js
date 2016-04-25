@@ -6,11 +6,18 @@ const
 var dirContent = [], dirNewContent = [], changedFiles = [], statFiles = {} ;
 
 module.exports = function(dirPath, callback) {
-    async.forever( function(next) {
 
-        _.each(dirContent, function(e, index, list) {
-            statFiles[dirPath + '/' + e] = fs.statSync(dirPath + '/' + e)['ctime'].toString() ;
-        });
+    dirContent = fs.readdirSync(dirPath);
+
+    _.each(dirContent, function(e, index, list) {
+        statFiles[dirPath + '/' + e] = fs.statSync(dirPath + '/' + e)['ctime'].toString() ;
+    });
+
+    dirContent = [];
+
+    // ---------------------------------------------------------------------------
+
+    async.forever( function(next) {
 
         dirNewContent = fs.readdirSync(dirPath);
 
@@ -21,19 +28,20 @@ module.exports = function(dirPath, callback) {
         changedFilesBuffer.forEach(function(e) {
             if( fs.statSync(dirPath + '/' + e)['ctime'].toString()  !=
                 statFiles[ dirPath + '/' + e ]) {
-                console.log(e);
                 changedFiles.push(e);
+                statFiles[dirPath + '/' + e] = fs.statSync(dirPath + '/' + e)['ctime'].toString() ;
             }
         });
 
-        //console.log(changedFiles);
-
         if ( deletedFiles.length > 0  || addedFiles.length > 0 || changedFiles.length > 0) {
             callback(dirNewContent, deletedFiles, addedFiles, changedFiles);
-            
-
+            changedFiles = [];
             dirContent = dirNewContent;
         };
+
+        _.each(dirContent, function(e, index, list) {
+            statFiles[dirPath + '/' + e] = fs.statSync(dirPath + '/' + e)['ctime'].toString() ;
+        });
 
         next();
 
