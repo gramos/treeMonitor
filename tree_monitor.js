@@ -5,7 +5,9 @@ const
 
 var dirContent = [], dirNewContent = [], changedFiles = [], statFiles = {} ;
 
-module.exports = function(dirPath, callback) {
+module.exports = function(dirPath, callback, exec_once) {
+
+    exec_once = exec_once || "false";
 
     dirContent = fs.readdirSync(dirPath);
 
@@ -43,7 +45,7 @@ module.exports = function(dirPath, callback) {
             statFiles[dirPath + '/' + e] = fs.statSync(dirPath + '/' + e)['ctime'].toString() ;
         });
 
-        next();
+        if( exec_once == "false" ){ next(); };
 
     },
     function(err) {
