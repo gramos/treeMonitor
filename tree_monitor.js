@@ -17,15 +17,18 @@ function getChangedFiles(dirPath, changedFilesBuffer, statFiles, changedFiles) {
     });
 };
 
+function getStatFiles(dirPath, statFiles, dirContent) {
+    _.each(dirContent, function(e, index, list) {
+        statFiles[dirPath + '/' + e] = fs.statSync(dirPath + '/' + e)['ctime'].toString() ;
+    });
+};
+
 module.exports = function(dirPath, callback, exec_once) {
 
     exec_once  = exec_once || "false";
     dirContent = fs.readdirSync(dirPath);
 
-    _.each(dirContent, function(e, index, list) {
-        statFiles[dirPath + '/' + e] = fs.statSync(dirPath + '/' + e)['ctime'].toString() ;
-    });
-
+    getStatFiles(dirPath, statFiles, dirContent);
     dirContent = [];
 
     // ---------------------------------------------------------------------------
@@ -45,9 +48,7 @@ module.exports = function(dirPath, callback, exec_once) {
             dirContent = dirNewContent;
         };
 
-        _.each(dirContent, function(e, index, list) {
-            statFiles[dirPath + '/' + e] = fs.statSync(dirPath + '/' + e)['ctime'].toString() ;
-        });
+        getStatFiles(dirPath, statFiles, dirContent);
 
         if( exec_once == "false" ){ next(); };
 
