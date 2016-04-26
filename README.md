@@ -5,9 +5,10 @@ Simple node script to monitor directory.
 
 ```javascript
 const
-    dirWatchList = require('./dir_watch');
+    treeMonitor = require('./tree_monitor');
 
-dirWatchList('./sync', function(dirContent, deleted, added) {
-   console.log('Deleted files: ' + deleted + '\nAdded Files: ' + added);
+treeMonitor('./sync', function(dirContent, deleted, added, changed) {
+    console.log('Deleted files: ' + deleted + '\nAdded Files: '
+                + added + '\nChanged Files: ' + changed);
 })
 ```
